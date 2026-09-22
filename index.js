@@ -15,24 +15,24 @@ app.use(express.json());
 // ===============================
 
 let aerolineas = [
-  {
-    id: 1,
-    codigo: "TA",
-    nombre: "TAME",
-    pais: "Ecuador"
-  },
-  {
-    id: 2,
-    codigo: "AV",
-    nombre: "Avianca",
-    pais: "Colombia"
-  },
-  {
-    id: 3,
-    codigo: "LA",
-    nombre: "LATAM",
-    pais: "Chile"
-  }
+    {
+        id: 1,
+        codigo: "TA",
+        nombre: "TAME",
+        pais: "Ecuador"
+    },
+    {
+        id: 2,
+        codigo: "AV",
+        nombre: "Avianca",
+        pais: "Colombia"
+    },
+    {
+        id: 3,
+        codigo: "LA",
+        nombre: "LATAM",
+        pais: "Chile"
+    }
 ];
 
 // ===============================
@@ -40,11 +40,17 @@ let aerolineas = [
 // ===============================
 
 app.get("/", (req, res) => {
-  res.status(200).json({
-    servicio: "API REST de Aerolíneas",
-    estado: "Activo",
-    mensaje: "API desplegada correctamente"
-  });
+    res.status(200).json({
+        servicio: "API REST de Aerolíneas - TAME",
+        version: "1.0.0",
+        estado: "Activo",
+        mensaje: "Servicio disponible correctamente",
+        endpoints: {
+            aerolineas: "/api/aerolineas",
+            porId: "/api/aerolineas/:id",
+            porCodigo: "/api/aerolineas/codigo/:codigo"
+        }
+    });
 });
 
 // ===============================
@@ -52,10 +58,10 @@ app.get("/", (req, res) => {
 // ===============================
 
 app.get("/api/aerolineas", (req, res) => {
-  res.status(200).json({
-    cantidad: aerolineas.length,
-    data: aerolineas
-  });
+    res.status(200).json({
+        cantidad: aerolineas.length,
+        data: aerolineas
+    });
 });
 
 // ===============================
@@ -63,19 +69,19 @@ app.get("/api/aerolineas", (req, res) => {
 // ===============================
 
 app.get("/api/aerolineas/codigo/:codigo", (req, res) => {
-  const codigo = req.params.codigo.toUpperCase();
+    const codigo = req.params.codigo.toUpperCase();
 
-  const aerolinea = aerolineas.find(
-    (a) => a.codigo.toUpperCase() === codigo
-  );
+    const aerolinea = aerolineas.find(
+        (a) => a.codigo.toUpperCase() === codigo
+    );
 
-  if (!aerolinea) {
-    return res.status(404).json({
-      mensaje: "Aerolínea no encontrada"
-    });
-  }
+    if (!aerolinea) {
+        return res.status(404).json({
+            mensaje: "Aerolínea no encontrada"
+        });
+    }
 
-  res.status(200).json(aerolinea);
+    res.status(200).json(aerolinea);
 });
 
 // ===============================
@@ -83,17 +89,17 @@ app.get("/api/aerolineas/codigo/:codigo", (req, res) => {
 // ===============================
 
 app.get("/api/aerolineas/:id", (req, res) => {
-  const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id);
 
-  const aerolinea = aerolineas.find((a) => a.id === id);
+    const aerolinea = aerolineas.find((a) => a.id === id);
 
-  if (!aerolinea) {
-    return res.status(404).json({
-      mensaje: "Aerolínea no encontrada"
-    });
-  }
+    if (!aerolinea) {
+        return res.status(404).json({
+            mensaje: "Aerolínea no encontrada"
+        });
+    }
 
-  res.status(200).json(aerolinea);
+    res.status(200).json(aerolinea);
 });
 
 // ===============================
@@ -101,40 +107,40 @@ app.get("/api/aerolineas/:id", (req, res) => {
 // ===============================
 
 app.post("/api/aerolineas", (req, res) => {
-  const { codigo, nombre, pais } = req.body;
+    const { codigo, nombre, pais } = req.body;
 
-  if (!codigo || !nombre || !pais) {
-    return res.status(400).json({
-      mensaje: "Código, nombre y país son obligatorios"
+    if (!codigo || !nombre || !pais) {
+        return res.status(400).json({
+            mensaje: "Código, nombre y país son obligatorios"
+        });
+    }
+
+    const codigoExiste = aerolineas.find(
+        (a) => a.codigo.toUpperCase() === codigo.toUpperCase()
+    );
+
+    if (codigoExiste) {
+        return res.status(400).json({
+            mensaje: "El código de la aerolínea ya existe"
+        });
+    }
+
+    const nuevaAerolinea = {
+        id:
+            aerolineas.length > 0
+                ? Math.max(...aerolineas.map((a) => a.id)) + 1
+                : 1,
+        codigo: codigo.toUpperCase(),
+        nombre,
+        pais
+    };
+
+    aerolineas.push(nuevaAerolinea);
+
+    res.status(201).json({
+        mensaje: "Aerolínea registrada correctamente",
+        data: nuevaAerolinea
     });
-  }
-
-  const codigoExiste = aerolineas.find(
-    (a) => a.codigo.toUpperCase() === codigo.toUpperCase()
-  );
-
-  if (codigoExiste) {
-    return res.status(400).json({
-      mensaje: "El código de la aerolínea ya existe"
-    });
-  }
-
-  const nuevaAerolinea = {
-    id:
-      aerolineas.length > 0
-        ? Math.max(...aerolineas.map((a) => a.id)) + 1
-        : 1,
-    codigo: codigo.toUpperCase(),
-    nombre,
-    pais
-  };
-
-  aerolineas.push(nuevaAerolinea);
-
-  res.status(201).json({
-    mensaje: "Aerolínea registrada correctamente",
-    data: nuevaAerolinea
-  });
 });
 
 // ===============================
@@ -142,30 +148,30 @@ app.post("/api/aerolineas", (req, res) => {
 // ===============================
 
 app.put("/api/aerolineas/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  const { codigo, nombre, pais } = req.body;
+    const id = parseInt(req.params.id);
+    const { codigo, nombre, pais } = req.body;
 
-  const indice = aerolineas.findIndex((a) => a.id === id);
+    const indice = aerolineas.findIndex((a) => a.id === id);
 
-  if (indice === -1) {
-    return res.status(404).json({
-      mensaje: "Aerolínea no encontrada"
+    if (indice === -1) {
+        return res.status(404).json({
+            mensaje: "Aerolínea no encontrada"
+        });
+    }
+
+    aerolineas[indice] = {
+        ...aerolineas[indice],
+        codigo: codigo
+            ? codigo.toUpperCase()
+            : aerolineas[indice].codigo,
+        nombre: nombre || aerolineas[indice].nombre,
+        pais: pais || aerolineas[indice].pais
+    };
+
+    res.status(200).json({
+        mensaje: "Aerolínea actualizada correctamente",
+        data: aerolineas[indice]
     });
-  }
-
-  aerolineas[indice] = {
-    ...aerolineas[indice],
-    codigo: codigo
-      ? codigo.toUpperCase()
-      : aerolineas[indice].codigo,
-    nombre: nombre || aerolineas[indice].nombre,
-    pais: pais || aerolineas[indice].pais
-  };
-
-  res.status(200).json({
-    mensaje: "Aerolínea actualizada correctamente",
-    data: aerolineas[indice]
-  });
 });
 
 // ===============================
@@ -173,24 +179,24 @@ app.put("/api/aerolineas/:id", (req, res) => {
 // ===============================
 
 app.delete("/api/aerolineas/:id", (req, res) => {
-  const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id);
 
-  const indice = aerolineas.findIndex((a) => a.id === id);
+    const indice = aerolineas.findIndex((a) => a.id === id);
 
-  if (indice === -1) {
-    return res.status(404).json({
-      mensaje: "Aerolínea no encontrada"
+    if (indice === -1) {
+        return res.status(404).json({
+            mensaje: "Aerolínea no encontrada"
+        });
+    }
+
+    const aerolineaEliminada = aerolineas[indice];
+
+    aerolineas.splice(indice, 1);
+
+    res.status(200).json({
+        mensaje: "Aerolínea eliminada correctamente",
+        data: aerolineaEliminada
     });
-  }
-
-  const aerolineaEliminada = aerolineas[indice];
-
-  aerolineas.splice(indice, 1);
-
-  res.status(200).json({
-    mensaje: "Aerolínea eliminada correctamente",
-    data: aerolineaEliminada
-  });
 });
 
 // ===============================
@@ -198,9 +204,9 @@ app.delete("/api/aerolineas/:id", (req, res) => {
 // ===============================
 
 app.use((req, res) => {
-  res.status(404).json({
-    mensaje: "Endpoint no encontrado"
-  });
+    res.status(404).json({
+        mensaje: "Endpoint no encontrado"
+    });
 });
 
 // ===============================
@@ -208,9 +214,9 @@ app.use((req, res) => {
 // ===============================
 
 app.listen(PORT, () => {
-  console.log("======================================");
-  console.log("API REST de Aerolíneas iniciada");
-  console.log(`Puerto: ${PORT}`);
-  console.log(`URL local: http://localhost:${PORT}`);
-  console.log("======================================");
+    console.log("======================================");
+    console.log("API REST de Aerolíneas iniciada");
+    console.log(`Puerto: ${PORT}`);
+    console.log(`URL local: http://localhost:${PORT}`);
+    console.log("======================================");
 });
